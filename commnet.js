@@ -1,4 +1,4 @@
-let loggedInUser = "to write commnet please login";
+let loggedInUser = "click here to write a comment";
 
 document.getElementById("author-name").innerHTML = loggedInUser;
 
@@ -37,6 +37,52 @@ let comment_list = [
     updatedDate: null,
   },
 ];
+let visible = false;
+
+const toggleModal = (flg) => {
+  if (!flg) {
+    document.querySelector(".login-container").classList.remove("visible");
+    visible = false;
+  } else {
+    document.querySelector(".login-container").classList.add("visible");
+    visible = true;
+  }
+};
+
+window.addEventListener("click", (e) => {
+  if (e.target !== document.querySelector(".input-box")) {
+    toggleModal(false);
+  } else if (e.target === document.querySelector(".input-box")) {
+    if (loggedInUser == "click here to write a comment") toggleModal(true);
+  }
+});
+
+const login_buttons_container = document.querySelector(".login-container");
+login_buttons_container.addEventListener("click", (e) => {
+  console.log(e.target);
+  if (e.target.innerHTML === "facebook") {
+    console.log("facebook!!!");
+    loggedInUser = "authenticated by facebook";
+  }
+  if (e.target.innerHTML === "naver") {
+    console.log("naver!!!");
+    loggedInUser = "authenticated by naver";
+  }
+  if (e.target.innerHTML === "kakao") {
+    console.log("kakao!!!");
+    loggedInUser = "authenticated by kakao";
+  }
+  if (e.target.innerHTML === "google") {
+    console.log("google!!!");
+    loggedInUser = "authenticated by google";
+  }
+  if (e.target.innerHTML === "twitter") {
+    console.log("twitter!!!");
+    loggedInUser = "authenticated by twitter";
+  }
+  document.getElementById("author-name").innerHTML = loggedInUser;
+  isLoggedIn = true;
+});
 
 const comment_card = (comment_card) => {
   return {
@@ -76,7 +122,12 @@ function addComment() {
   }
 
   const comment_detail = document.querySelector("#comment-input");
-
+  if (comment_detail.value === "") {
+    console.log(comment_detail);
+    alert("nothing is written!");
+    return;
+  }
+  document.querySelector(".adding-comment").setAttribute("disabled", true);
   const comment = {
     author: loggedInUser,
     date: new Date(),
@@ -93,6 +144,8 @@ function addComment() {
   inject_comments();
 
   comment_detail.value = "";
+
+  document.querySelector(".adding-comment").removeAttribute("disabled");
 }
 
 function deleagateEventHandler() {

@@ -1,5 +1,6 @@
 .comment_card {
 	color : blue;
+    box-shadow: 2px 2px 5px black;
 }
 .col-9 > input {
 	font-size: 2rem; 
@@ -27,15 +28,13 @@ button {
 	color:red;
 }
 .comment_card {
-	border-style : solid;
-	border-color: red;
 	margin : .5rem;
 	padding: .5rem;
 }
 
 .comment-input-container {
 	border-style : solid;
-	border-color: green;
+	border-color: black;
 	margin : .5rem;
 	padding: .5rem;
 }
@@ -47,3 +46,22 @@ button {
 .input{
 	width : 100%;
 }
+.login-container{
+	border-style : solid;
+	border-color: yellow;
+	position: absolute;
+	top: 35%;
+	left: 23%;
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	visibility:hidden;
+}
+.login-container > button {
+	padding: 1rem;
+	margin: 0.5rem;
+}
+.login-container.visible {
+	visibility:visible;
+}
+
