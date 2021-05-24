@@ -1,0 +1,49 @@
+.comment_card {
+	color : blue;
+}
+.col-9 > input {
+	font-size: 2rem; 
+	width: 100%;
+}
+
+button {
+	font-size: 1rem;
+}
+
+.comment-author {
+	color: purple;
+	font-weight: bold;
+}
+
+.comment-input > div > input {
+	width: 100%;
+	padding: 1rem;
+	margin : 1rem;
+}
+.comment-input > button {
+	width: 100%;
+}
+.confirmButton {
+	color:red;
+}
+.comment_card {
+	border-style : solid;
+	border-color: red;
+	margin : .5rem;
+	padding: .5rem;
+}
+
+.comment-input-container {
+	border-style : solid;
+	border-color: green;
+	margin : .5rem;
+	padding: .5rem;
+}
+.news-contents {
+	margin : .5rem;
+	padding: .5rem;
+}
+
+.input{
+	width : 100%;
+}
