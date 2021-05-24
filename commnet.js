@@ -8,7 +8,7 @@ if (loggedInUser === "to write commnet please login") isLoggedIn = false;
 let comment_list = [
   {
     author: "gil",
-    date: new Date(),
+    date: 1,
     like: 3,
     dislike: 1,
     number_of_shared: 0,
@@ -18,7 +18,7 @@ let comment_list = [
   },
   {
     author: "spider-man",
-    date: new Date(),
+    date: 2,
     like: 3,
     dislike: 1,
     number_of_shared: 0,
@@ -28,7 +28,7 @@ let comment_list = [
   },
   {
     author: "x-man",
-    date: new Date(),
+    date: 3,
     like: 3,
     dislike: 1,
     number_of_shared: 0,
@@ -48,14 +48,21 @@ const comment_card = (comment_card) => {
     }</span>
 		<span class="comment-date">${comment_card.date}</span>
 		<p> ${comment_card.content} </p>
-		<button>delete</button>
-		<button>modify</button>
+			<div>
+				<button>like${comment_card.like}</button>
+				<button>dislike${comment_card.dislike}</button>
+			</div>
+		<div>
+			${loggedInUser === comment_card.author ? "<button>delete</button>" : ""} 
+			${loggedInUser === comment_card.author ? "<button>modify</button>" : ""} 
+		</div>
 		</div>
 		</div>
 `;
     },
   };
 };
+
 function loginHandler() {
   loggedInUser = prompt("your name");
   if (loggedInUser) isLoggedIn = true;
@@ -67,7 +74,9 @@ function addComment() {
   if (!isLoggedIn) {
     loginHandler();
   }
-  const comment_detail = document.querySelector("#comment-detail");
+
+  const comment_detail = document.querySelector("#comment-input");
+
   const comment = {
     author: loggedInUser,
     date: new Date(),
@@ -78,9 +87,47 @@ function addComment() {
     content: comment_detail.value,
     updatedDate: null,
   };
+
   comment_list.push(comment);
+
   inject_comments();
+
   comment_detail.value = "";
+}
+
+function deleagateEventHandler() {
+  //event delegate pattern
+  document
+    .querySelector("div.comment-container")
+    .addEventListener("click", (event) => {
+      if (event.target == "[object HTMLButtonElement]") {
+        if (event.target.innerHTML === "modify") {
+          modifyComment(event.target.parentNode.parentNode.parentNode.id);
+        }
+      }
+      if (event.target == "[object HTMLButtonElement]") {
+        if (event.target.innerHTML === "delete") {
+          console.log("let's delete this comment");
+          deleteComment(event.target.parentNode.parentNode.parentNode.id);
+        }
+      }
+      if (event.target == "[object HTMLButtonElement]") {
+        const regex = /dislike/;
+        if (event.target.innerHTML.match(regex)) {
+          console.log(regex);
+          console.log("let's count up for dislike");
+          dislikeHandler(event.target.parentNode.parentNode.parentNode.id);
+        }
+      }
+      if (event.target == "[object HTMLButtonElement]") {
+        const regex = /^like/;
+        if (event.target.innerHTML.match(regex)) {
+          console.log(regex);
+          console.log("let's count up for like");
+          likeHandler(event.target.parentNode.parentNode.parentNode.id);
+        }
+      }
+    });
 }
 
 //put comments into html file
@@ -89,28 +136,44 @@ function inject_comments() {
   for (let i = 0; i < comment_list.length; i++) {
     comments += comment_card(comment_list[i]).detail();
     document.querySelector("div.comment-container").innerHTML = comment_card(
-      comment_list[i].author,
-      `test${i}`
+      comment_list[i].author
     ).detail();
   }
-
-  //event delegate pattern
   document.querySelector("div.comment-container").innerHTML = comments;
-  document
-    .querySelector("div.comment-container")
-    .addEventListener("click", (event) => {
-      if (event.target == "[object HTMLButtonElement]") {
-        if (event.target.innerHTML === "modify") {
-          modifyComment(event.target.parentNode.parentNode.id);
-        }
-      }
-      if (event.target == "[object HTMLButtonElement]") {
-        if (event.target.innerHTML === "delete") {
-          console.log("let's delete this comment");
-          deleteComment(event.target.parentNode.parentNode.id);
-        }
-      }
-    });
+}
+
+function likeHandler(target_comment_id) {
+  //like를 한 사람들을 따로 빼서 db화 하면 또 누르는걸 방지할 수 있지만 일단 지금은 안함
+  console.log("likeHandler", target_comment_id);
+  const filtered_comment_list = comment_list.filter(
+    (one) => one.id !== +target_comment_id
+  );
+  const target_comment = comment_list.find(
+    (one) => one.id === +target_comment_id
+  );
+  target_comment.like = target_comment.like + 1;
+  filtered_comment_list.push(target_comment);
+  comment_list = filtered_comment_list;
+  console.log(comment_list);
+  comment_list.sort((one, two) => one.date - two.date);
+  console.log(comment_list);
+  inject_comments();
+}
+function dislikeHandler(target_comment_id) {
+  console.log("dislikeHandler", target_comment_id);
+  const filtered_comment_list = comment_list.filter(
+    (one) => one.id !== +target_comment_id
+  );
+  const target_comment = comment_list.find(
+    (one) => one.id === +target_comment_id
+  );
+  target_comment.dislike = target_comment.dislike + 1;
+  filtered_comment_list.push(target_comment);
+  comment_list = filtered_comment_list;
+  console.log(comment_list);
+  comment_list.sort((one, two) => one.date - two.date);
+  console.log(comment_list);
+  inject_comments();
 }
 
 //modify comment
@@ -163,11 +226,23 @@ function modificatoinConfirmHandler(target_comment_id) {
 
 //delete comment
 function deleteComment(target_comment_id) {
+  if (!identifyAuthor(target_comment_id)) return;
   const filteredCommentList = comment_list.filter(
     (one) => one.id !== +target_comment_id
   );
+  console.log(filteredCommentList);
   comment_list = filteredCommentList;
   inject_comments();
 }
 
+function identifyAuthor(target_comment_id) {
+  console.log(target_comment_id, loggedInUser);
+  const target_comment_author = comment_list.filter(
+    (one) => one.id === +target_comment_id
+  )[0].author;
+  if (target_comment_author !== loggedInUser) return false;
+  return true;
+}
+
 inject_comments();
+deleagateEventHandler();
