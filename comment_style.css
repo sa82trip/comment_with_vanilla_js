@@ -1,6 +1,11 @@
-.comment_card {
-	color : blue;
-    box-shadow: 2px 2px 5px black;
+.navigator{
+	display:flex;
+	font-size: 3rem;
+	background: pink;
+	padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+}
+.post-main-img > img{
+	width:100%;
 }
 .col-9 > input {
 	font-size: 2rem; 
@@ -8,33 +13,33 @@
 }
 
 button {
-	font-size: 1rem;
+	font-size: 3rem;
+	border-radius: 25px;
+	border-color: gray;
+	background: white;
+	margin: 0 10px 0 15px;
 }
 
 .comment-author {
-	color: purple;
+	color: #505050;
 	font-weight: bold;
+	font-size:1.8rem;
+}
+.comment-date{
+	font-size:.8rem;
 }
 
-.comment-input > div > input {
-	width: 100%;
-	padding: 1rem;
-	margin : 1rem;
-}
-.comment-input > button {
-	width: 100%;
-}
 .confirmButton {
 	color:red;
 }
 .comment_card {
-	margin : .5rem;
+	margin : .5rem 0 1rem 0;
 	padding: .5rem;
+	color : gray;
+    box-shadow: 2px 2px 5px black;
 }
 
 .comment-input-container {
-	border-style : solid;
-	border-color: black;
 	margin : .5rem;
 	padding: .5rem;
 }
@@ -47,21 +52,92 @@ button {
 	width : 100%;
 }
 .login-container{
-	border-style : solid;
-	border-color: yellow;
 	position: absolute;
-	top: 35%;
-	left: 23%;
+	top: 80%;
+	left: 10%;
 	display: flex;
 	flex-direction: column;
-	width: 50%;
+	width: 80%;
+    box-shadow: 2px 2px 5px black;
+	border-radius: 25px;
+	padding:15px 0 15px 0;
 	visibility:hidden;
 }
 .login-container > button {
 	padding: 1rem;
+	background: gray;
+	color: white;
+	font-weight: bold;
 	margin: 0.5rem;
 }
 .login-container.visible {
 	visibility:visible;
 }
 
+/*comment adding region======================*/
+.author-name{
+	font-size: 3rem;
+	margin:15px 0 15px 0;
+    text-decoration: underline;
+}
+
+.adding-comment {
+	color: white;
+ 	background: pink;
+	font-weight:bold;
+	padding: 1rem 3rem 1rem 3rem;
+	width:100%;
+}
+.input-box {
+	width: 100%;
+	margin: 15px 0px 15px 0px;
+	font-size: 5rem;
+    outline: 0;
+    border-width: 0 0 2px;
+    border-color: blue;
+    flex-shrink: 0;
+    flex-grow: 1;
+}
+
+.input-box:focus {
+    border-color: green;
+}
+
+.flex-container{
+	display:flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+/*===========================================*/
+
+#modifying-text{
+	width:90%;
+	padding: 20px;
+	font-size: 5rem;
+}	
+/*card*/
+.flex-button-box{
+	display:flex;
+	justify-content: flex-end;
+}
+.flex-editing-button-box{
+	margin: 1rem 0 1rem 0;
+	display: flex;
+	justify-content: space-evenly;
+
+}
+.flex-editing-button-box > button {
+	width: 100%;
+	background: green;
+	color: white;
+	font-weight: bold;
+	text-size: 2rem;
+}
+.flex-editing-button-box > .red-button {
+	background: red;
+}
+
+.display_none{
+	display:none;
+}

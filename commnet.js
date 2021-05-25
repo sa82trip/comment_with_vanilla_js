@@ -1,10 +1,5 @@
-const bannedWords = ["미친", "18", "쌍놈"];
-let loggedInUser = "click here to write a comment";
-document.getElementById("author-name").innerHTML = loggedInUser;
-
-let isModifying = false;
-let isLoggedIn;
-if (loggedInUser === "to write commnet please login") isLoggedIn = false;
+// mock data =======================================
+const bannedWords = ["미친", "18", "쌍놈", "바보"];
 
 let comment_list = [
   {
@@ -48,88 +43,55 @@ const mockLoginMethods = [
   "email",
 ];
 
+// mock data end ================================
+
+// initialization =================================================
+let loggedInUser = "click here to write a comment";
+const userName = document.getElementById("author-name");
+userName.innerHTML = loggedInUser;
+const commnet_input_tag = document.getElementById("comment-input");
+commnet_input_tag.setAttribute("disabled", "true");
+let isModifying = false;
+let isLoggedIn;
+if (loggedInUser === "to write commnet please login") isLoggedIn = false;
+
 const loginContainer = document.querySelector(".login-container");
 mockLoginMethods.forEach((one) => {
   const method = document.createElement("button");
   method.innerHTML = one;
   loginContainer.appendChild(method);
 });
-
-let visible = false;
-
-const toggleModal = (flg) => {
-  if (!flg) {
-    document.querySelector(".login-container").classList.remove("visible");
-    visible = false;
-  } else {
-    document.querySelector(".login-container").classList.add("visible");
-    visible = true;
-  }
-};
-
-window.addEventListener("click", (e) => {
-  if (e.target !== document.querySelector(".input-box")) {
-    toggleModal(false);
-  } else if (e.target === document.querySelector(".input-box")) {
-    if (loggedInUser == "click here to write a comment") toggleModal(true);
-  }
-});
+let visibleFlg = false;
 
 const login_buttons_container = document.querySelector(".login-container");
-login_buttons_container.addEventListener("click", (e) => {
-  if (e.target.innerHTML === "facebook") {
-    loggedInUser = "authenticated by facebook";
-  }
-  if (e.target.innerHTML === "naver") {
-    loggedInUser = "authenticated by naver";
-  }
-  if (e.target.innerHTML === "kakao") {
-    loggedInUser = "authenticated by kakao";
-  }
-  if (e.target.innerHTML === "google") {
-    loggedInUser = "authenticated by google";
-  }
-  if (e.target.innerHTML === "twitter") {
-    loggedInUser = "authenticated by twitter";
-  }
-  if (e.target.innerHTML === "email") {
-    loginHandler();
-    return;
-  }
-  document.getElementById("author-name").innerHTML = loggedInUser;
-  isLoggedIn = true;
-});
+const comment_add_button = document.querySelector(".adding-comment");
+comment_add_button.classList.toggle("display_none");
+// initialization end =================================================
 
-const comment_card = (comment_card) => {
-  return {
-    detail() {
-      return `<div class="comment_card" id="${comment_card.id}">
-		<div>
-		<span class="comment-author">${
-      comment_card.author ? comment_card.author : loggedInUser
-    }</span>
-		<span class="comment-date">${comment_card.date}</span>
-		<p> ${comment_card.content} </p>
-			<div>
-				<button>like${comment_card.like}</button>
-				<button>dislike${comment_card.dislike}</button>
-			</div>
-		<div>
-			${loggedInUser === comment_card.author ? "<button>delete</button>" : ""} 
-			${loggedInUser === comment_card.author ? "<button>modify</button>" : ""} 
-		</div>
-		</div>
-		</div>
-`;
-    },
-  };
+// funcitons ==========================================================
+const toggleLoginModal = (flg) => {
+  if (!flg) {
+    document.querySelector(".login-container").classList.remove("visible");
+    visibleFlg = false;
+  } else {
+    document.querySelector(".login-container").classList.add("visible");
+    visibleFlg = true;
+  }
 };
 
 function loginHandler() {
   if (!isLoggedIn) {
-    loggedInUser = prompt("your email");
-    if (loggedInUser) isLoggedIn = true;
-    document.getElementById("author-name").innerHTML = loggedInUser;
+    const tempUserName = prompt("your email");
+    const regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+    if (!regExp.test(tempUserName)) {
+      alert("please enter valid email");
+      return false;
+    } else {
+      loggedInUser = tempUserName;
+      isLoggedIn = true;
+      commnet_input_tag.removeAttribute("disabled");
+      userName.innerHTML = loggedInUser;
+    }
     return false;
   }
 }
@@ -150,6 +112,9 @@ function makeButtonDisabledTemp(target) {
 }
 
 function addComment(e) {
+  if (!isLoggedIn) {
+    return;
+  }
   if (!checkRapidCommenting(e)) {
     makeButtonDisabledTemp(e.target);
     return;
@@ -161,7 +126,6 @@ function addComment(e) {
   }
   const comment_detail = document.querySelector("#comment-input");
   if (comment_detail.value === "") {
-    console.log(comment_detail);
     alert("nothing is written!");
     return;
   }
@@ -186,51 +150,11 @@ function addComment(e) {
   document.querySelector(".adding-comment").removeAttribute("disabled");
 }
 
-function deleagateEventHandler() {
-  //event delegate pattern
-  document
-    .querySelector("div.comment-container")
-    .addEventListener("click", (event) => {
-      if (event.target == "[object HTMLButtonElement]") {
-        if (event.target.innerHTML === "modify") {
-          modifyComment(event.target.parentNode.parentNode.parentNode.id);
-        }
-      }
-      if (event.target == "[object HTMLButtonElement]") {
-        if (event.target.innerHTML === "delete") {
-          console.log("let's delete this comment");
-          deleteComment(event.target.parentNode.parentNode.parentNode.id);
-        }
-      }
-      if (event.target == "[object HTMLButtonElement]") {
-        const regex = /dislike/;
-        if (event.target.innerHTML.match(regex)) {
-          console.log(regex);
-          console.log("let's count up for dislike");
-          dislikeHandler(event.target.parentNode.parentNode.parentNode.id);
-        }
-      }
-      if (event.target == "[object HTMLButtonElement]") {
-        const regex = /^like/;
-        if (event.target.innerHTML.match(regex)) {
-          console.log(regex);
-          console.log("let's count up for like");
-          likeHandler(event.target.parentNode.parentNode.parentNode.id);
-        }
-      }
-    });
-}
-
 //put comments into html file
 function inject_comments() {
   let comments = "";
   for (let i = 0; i < comment_list.length; i++) {
     comments += comment_card(comment_list[i]).detail();
-
-    // 처음에 comment_card를 만들 때 사용했던 로직
-    document.querySelector("div.comment-container").innerHTML = comment_card(
-      comment_list[i].author
-    ).detail();
   }
   document.querySelector("div.comment-container").innerHTML = comments;
 }
@@ -247,24 +171,19 @@ function checkWordsOfComment() {
 
 function likeHandler(target_comment_id) {
   //like를 한 사람들을 따로 빼서 db화 하면 또 누르는걸 방지할 수 있지만 일단 지금은 안함
-  console.log("likeHandler", target_comment_id);
   const filtered_comment_list = comment_list.filter(
     (one) => one.id != target_comment_id
   );
   const target_comment = comment_list.find((one) => {
-    console.log(one.id);
     return one.id == target_comment_id;
   });
   target_comment.like = target_comment.like + 1;
   filtered_comment_list.push(target_comment);
   comment_list = filtered_comment_list;
-  console.log(comment_list);
   comment_list.sort((one, two) => one.date - two.date);
-  console.log(comment_list);
   inject_comments();
 }
 function dislikeHandler(target_comment_id) {
-  console.log("dislikeHandler", target_comment_id);
   const filtered_comment_list = comment_list.filter(
     (one) => one.id != target_comment_id
   );
@@ -274,9 +193,7 @@ function dislikeHandler(target_comment_id) {
   target_comment.dislike = target_comment.dislike + 1;
   filtered_comment_list.push(target_comment);
   comment_list = filtered_comment_list;
-  console.log(comment_list);
   comment_list.sort((one, two) => one.date - two.date);
-  console.log(comment_list);
   inject_comments();
 }
 
@@ -286,7 +203,6 @@ function modifyComment(target_comment_id) {
     return;
   }
   isModifying = true;
-  console.log(target_comment_id);
   const target_comment = comment_list.filter(
     (one) => one.id === +target_comment_id
   )[0];
@@ -295,7 +211,7 @@ function modifyComment(target_comment_id) {
   const modify_box = document.createElement("div");
   modify_box.setAttribute("class", "modify_box");
   modify_box.setAttribute("id", `"${new Date().now}"`);
-  const textArea = document.createElement("textarea");
+  const textArea = document.createElement("input");
   textArea.setAttribute("id", "modifying-text");
   textArea.value = target_comment.content;
   const confirmButton = document.createElement("button");
@@ -311,7 +227,6 @@ function modifyComment(target_comment_id) {
 }
 
 function modificatoinConfirmHandler(target_comment_id) {
-  console.log(target_comment_id);
   const targetObj = comment_list.filter(
     (one) => one.id === +target_comment_id
   )[0];
@@ -319,12 +234,10 @@ function modificatoinConfirmHandler(target_comment_id) {
     .children[0].value;
   targetObj.content = editedText;
   targetObj.updatedDate = new Date();
-  console.log(targetObj);
   comment_list.filter((one) => one.id !== +target_comment_id).push(targetObj);
   const targetContainer = document.getElementById(target_comment_id);
   targetContainer.removeChild(targetContainer.children[0]);
   inject_comments();
-  console.log(comment_list);
   isModifying = false;
 }
 
@@ -334,18 +247,123 @@ function deleteComment(target_comment_id) {
   const filteredCommentList = comment_list.filter(
     (one) => one.id !== +target_comment_id
   );
-  console.log(filteredCommentList);
   comment_list = filteredCommentList;
   inject_comments();
 }
 
 function identifyAuthor(target_comment_id) {
-  console.log(target_comment_id, loggedInUser);
   const target_comment_author = comment_list.filter(
     (one) => one.id === +target_comment_id
   )[0].author;
   if (target_comment_author !== loggedInUser) return false;
   return true;
+}
+// funcitons end ==========================================================
+
+// attach eventlistener ================================================
+window.addEventListener("click", (e) => {
+  if (
+    e.target === document.querySelector(".adding-comment") ||
+    e.target === document.querySelector(".input-box")
+  ) {
+    if (loggedInUser == "click here to write a comment") toggleLoginModal(true);
+  } else if (e.target !== document.querySelector(".input-box")) {
+    toggleLoginModal(false);
+  }
+});
+
+login_buttons_container.addEventListener("click", (e) => {
+  if (e.target.innerHTML === "facebook") {
+    loggedInUser = "authenticated by facebook";
+  }
+  if (e.target.innerHTML === "naver") {
+    loggedInUser = "authenticated by naver";
+  }
+  if (e.target.innerHTML === "kakao") {
+    loggedInUser = "authenticated by kakao";
+  }
+  if (e.target.innerHTML === "google") {
+    loggedInUser = "authenticated by google";
+  }
+  if (e.target.innerHTML === "twitter") {
+    loggedInUser = "authenticated by twitter";
+  }
+  if (e.target.innerHTML === "email") {
+    loginHandler();
+    return;
+  }
+  document.getElementById("author-name").innerHTML = loggedInUser;
+  commnet_input_tag.removeAttribute("disabled");
+  comment_add_button.classList.toggle("display_none");
+  isLoggedIn = true;
+});
+
+// attach eventlistener end ================================================
+
+// make each comment ===================================================
+const comment_card = (comment_card) => {
+  let formattedDate;
+  formattedDate = `${comment_card.date.getFullYear()}-${
+    comment_card.date.getMonth() + 1
+  }-${
+    comment_card.date.getDay() + 2
+  }  ${comment_card.date.getHours()}:${comment_card.date.getMinutes()}`;
+  return {
+    detail() {
+      return `<div class="comment_card" id="${comment_card.id}">
+		<div>
+		<span class="comment-author">${
+      comment_card.author ? comment_card.author : loggedInUser
+    }</span>
+		<span class="comment-date">${formattedDate}</span>
+		<p> ${comment_card.content} </p>
+			<div class="flex-button-box">
+				 <button id="like">👍 ${comment_card.like}</button>
+				 <button id="dislike">👎 ${comment_card.dislike}</button>
+			</div>
+		<div class="flex-editing-button-box">
+			${
+        loggedInUser === comment_card.author
+          ? "<button class='red-button'>Delete</button>"
+          : ""
+      } 
+			${
+        loggedInUser === comment_card.author
+          ? "<button class='green-button'>Modify</button>"
+          : ""
+      } 
+		</div>
+		</div>
+		</div>
+`;
+    },
+  };
+};
+
+// make each comment end ===================================================
+
+function deleagateEventHandler() {
+  //event delegate pattern
+  document
+    .querySelector("div.comment-container")
+    .addEventListener("click", (event) => {
+      if (event.target == "[object HTMLButtonElement]") {
+        if (event.target.innerHTML === "Modify") {
+          modifyComment(event.target.parentNode.parentNode.parentNode.id);
+        }
+      }
+      if (event.target == "[object HTMLButtonElement]") {
+        if (event.target.innerHTML === "Delete") {
+          deleteComment(event.target.parentNode.parentNode.parentNode.id);
+        }
+      }
+      if (event.target.getAttribute("id") == "dislike") {
+        dislikeHandler(event.target.parentNode.parentNode.parentNode.id);
+      }
+      if (event.target.getAttribute("id") == "like") {
+        likeHandler(event.target.parentNode.parentNode.parentNode.id);
+      }
+    });
 }
 
 inject_comments();

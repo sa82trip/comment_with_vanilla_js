@@ -5,9 +5,17 @@
 	<title>Mock News Page</title>
 </head>
 <body>
+	<nav class="navigator">
+		<div class="site-title"><span>Happy News</span></div>
+		<div class="middle-div">	</div>
+		<div class="end-div">	</div>
+	</nav>
 	<div class="news-container">
 <div class="news-contents">
 <h1>The best deals on Apple MacBooks right now</h1>
+<div class="post-main-img">
+	<img src="http://cdn.mos.cms.futurecdn.net/gPvyaz76tASn87RCGuSdDc.jpg" alt="">
+</div>
 	<p>
 	With multiple configurations and various MacBook models available for purchase, including ones equipped with the new M1 processor, finding a deal on an Apple MacBook is not very hard.
 
@@ -22,14 +30,11 @@
 <hr>
 <div class="comment-container"></div>
 <form action="comments-box" class="comment-input-container">
-<div></div>
 <div>
-	<span id="author-name"></span>
+	<span id="author-name" class="author-name"></span>
 </div>
-<div>
-	<input id="comment-input" class="input-box" type="text" placeholder="write reply here">
-</div>
-<div>
+<div id="transformal-box" class="flex-container">
+	<input id="comment-input" class="input-box" type="text" placeholder="write comment here">
 	<button class="adding-comment" type="button" onclick="addComment(event)">댓글등록</button>
 </div>
 </form>
