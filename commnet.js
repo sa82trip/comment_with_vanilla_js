@@ -1,42 +1,60 @@
+const bannedWords = ["미친", "18", "쌍놈"];
 let loggedInUser = "click here to write a comment";
-
 document.getElementById("author-name").innerHTML = loggedInUser;
 
 let isModifying = false;
 let isLoggedIn;
 if (loggedInUser === "to write commnet please login") isLoggedIn = false;
+
 let comment_list = [
   {
     author: "gil",
-    date: 1,
+    date: new Date("2021-05-05"),
     like: 3,
     dislike: 1,
     number_of_shared: 0,
     content: "I am the King!!",
-    id: Math.random(),
+    id: new Date("2021-05-05"),
     updatedDate: null,
   },
   {
     author: "spider-man",
-    date: 2,
+    date: new Date("2021-05-06"),
     like: 3,
     dislike: 1,
     number_of_shared: 0,
     content: "Am I one of the Avengers?",
-    id: Math.random(),
+    id: new Date("2021-05-06"),
     updatedDate: null,
   },
   {
     author: "x-man",
-    date: 3,
+    date: new Date("2021-05-07"),
     like: 3,
     dislike: 1,
     number_of_shared: 0,
     content: "I'm not able to die!!",
-    id: Math.random(),
+    id: new Date("2021-05-07"),
     updatedDate: null,
   },
 ];
+
+const mockLoginMethods = [
+  "naver",
+  "facebook",
+  "kakao",
+  "google",
+  "twitter",
+  "email",
+];
+
+const loginContainer = document.querySelector(".login-container");
+mockLoginMethods.forEach((one) => {
+  const method = document.createElement("button");
+  method.innerHTML = one;
+  loginContainer.appendChild(method);
+});
+
 let visible = false;
 
 const toggleModal = (flg) => {
@@ -59,26 +77,24 @@ window.addEventListener("click", (e) => {
 
 const login_buttons_container = document.querySelector(".login-container");
 login_buttons_container.addEventListener("click", (e) => {
-  console.log(e.target);
   if (e.target.innerHTML === "facebook") {
-    console.log("facebook!!!");
     loggedInUser = "authenticated by facebook";
   }
   if (e.target.innerHTML === "naver") {
-    console.log("naver!!!");
     loggedInUser = "authenticated by naver";
   }
   if (e.target.innerHTML === "kakao") {
-    console.log("kakao!!!");
     loggedInUser = "authenticated by kakao";
   }
   if (e.target.innerHTML === "google") {
-    console.log("google!!!");
     loggedInUser = "authenticated by google";
   }
   if (e.target.innerHTML === "twitter") {
-    console.log("twitter!!!");
     loggedInUser = "authenticated by twitter";
+  }
+  if (e.target.innerHTML === "email") {
+    loginHandler();
+    return;
   }
   document.getElementById("author-name").innerHTML = loggedInUser;
   isLoggedIn = true;
@@ -110,17 +126,39 @@ const comment_card = (comment_card) => {
 };
 
 function loginHandler() {
-  loggedInUser = prompt("your name");
-  if (loggedInUser) isLoggedIn = true;
-  document.getElementById("author-name").innerHTML = loggedInUser;
-  return;
+  if (!isLoggedIn) {
+    loggedInUser = prompt("your email");
+    if (loggedInUser) isLoggedIn = true;
+    document.getElementById("author-name").innerHTML = loggedInUser;
+    return false;
+  }
 }
 
-function addComment() {
-  if (!isLoggedIn) {
-    loginHandler();
+function checkRapidCommenting() {
+  if (
+    loggedInUser == comment_list[comment_list.length - 1].author &&
+    loggedInUser == comment_list[comment_list.length - 2].author
+  ) {
+    alert("You are commeing too rapidly wait!");
+    return false;
+  } else return true;
+}
+
+function makeButtonDisabledTemp(target) {
+  target.setAttribute("disabled", true);
+  setTimeout(() => target.removeAttribute("disabled"), 3000);
+}
+
+function addComment(e) {
+  if (!checkRapidCommenting(e)) {
+    makeButtonDisabledTemp(e.target);
+    return;
   }
 
+  if (!checkWordsOfComment()) {
+    makeButtonDisabledTemp(e.target);
+    return;
+  }
   const comment_detail = document.querySelector("#comment-input");
   if (comment_detail.value === "") {
     console.log(comment_detail);
@@ -188,6 +226,8 @@ function inject_comments() {
   let comments = "";
   for (let i = 0; i < comment_list.length; i++) {
     comments += comment_card(comment_list[i]).detail();
+
+    // 처음에 comment_card를 만들 때 사용했던 로직
     document.querySelector("div.comment-container").innerHTML = comment_card(
       comment_list[i].author
     ).detail();
@@ -195,15 +235,26 @@ function inject_comments() {
   document.querySelector("div.comment-container").innerHTML = comments;
 }
 
+function checkWordsOfComment() {
+  const inputtedText = document.querySelector(".input-box").value;
+  if (bannedWords.some((word) => inputtedText.includes(word))) {
+    alert("금칙어를 제거하고 다시 시도해주세요");
+    return false;
+  } else {
+    return true;
+  }
+}
+
 function likeHandler(target_comment_id) {
   //like를 한 사람들을 따로 빼서 db화 하면 또 누르는걸 방지할 수 있지만 일단 지금은 안함
   console.log("likeHandler", target_comment_id);
   const filtered_comment_list = comment_list.filter(
-    (one) => one.id !== +target_comment_id
+    (one) => one.id != target_comment_id
   );
-  const target_comment = comment_list.find(
-    (one) => one.id === +target_comment_id
-  );
+  const target_comment = comment_list.find((one) => {
+    console.log(one.id);
+    return one.id == target_comment_id;
+  });
   target_comment.like = target_comment.like + 1;
   filtered_comment_list.push(target_comment);
   comment_list = filtered_comment_list;
@@ -215,10 +266,10 @@ function likeHandler(target_comment_id) {
 function dislikeHandler(target_comment_id) {
   console.log("dislikeHandler", target_comment_id);
   const filtered_comment_list = comment_list.filter(
-    (one) => one.id !== +target_comment_id
+    (one) => one.id != target_comment_id
   );
   const target_comment = comment_list.find(
-    (one) => one.id === +target_comment_id
+    (one) => one.id == target_comment_id
   );
   target_comment.dislike = target_comment.dislike + 1;
   filtered_comment_list.push(target_comment);
