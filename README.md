@@ -1,7 +1,10 @@
 ## simple comment with vanilla js
 
 프론트엔드 관련 라이브러리 사용을 배제하고 js, css, html만 이용해서 comment기능을 구현해보았습니다.  
-vanilla js로 코딩을 해보니, 지금까지보다 html구조에 더 신경을 써야 한다는 것을 깨닳게 해주는 작업이었습니다.
+vanilla js로 코딩을 해보니, 지금까지보다 html구조에 더 신경을 써야 한다는 것을 깨닳게 해주는 작업이었습니다.  
+현재 등록되어있는 금칙어는 아래와 같습니다.
+
+<img src="https://user-images.githubusercontent.com/38380280/119617848-30721f00-be3d-11eb-9808-61bac7f49281.png" width="800px" alt="금칙어">
 
 ### 실행법
 
@@ -23,7 +26,8 @@ vanilla js로 코딩을 해보니, 지금까지보다 html구조에 더 신경�
 3.  크롬 개발자 모드 켜서 mobile device로 설정
 
 
-    ![image](https://user-images.githubusercontent.com/38380280/119610028-8b067d80-be33-11eb-9312-0d9efbb1f7cc.png)
+
+    <img src="https://user-images.githubusercontent.com/38380280/119610028-8b067d80-be33-11eb-9312-0d9efbb1f7cc.png" width="400">
 
 
 
