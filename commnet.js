@@ -8,7 +8,7 @@ let comment_list = [
     like: 3,
     dislike: 1,
     number_of_shared: 0,
-    content: "I am the King!!",
+    content: "M1 MacBook Air 사고 싶네요!",
     id: new Date("2021-05-05"),
     updatedDate: null,
   },
@@ -43,6 +43,15 @@ const mockLoginMethods = [
   "email",
 ];
 
+const loginMethods = {
+  NAVER: "naver",
+  FACEBOOK: "facebook",
+  KAKAO: "kakao",
+  GOOGLE: "google",
+  TWITTER: "twitter",
+  EMAIL: "email",
+};
+
 // mock data end ================================
 
 // initialization =================================================
@@ -56,9 +65,10 @@ let isLoggedIn;
 if (loggedInUser === "to write commnet please login") isLoggedIn = false;
 
 const loginContainer = document.querySelector(".login-container");
-mockLoginMethods.forEach((one) => {
+mockLoginMethods.forEach((loginButtonText) => {
   const method = document.createElement("button");
-  method.innerHTML = one;
+  method.innerHTML = loginButtonText;
+  method.setAttribute("name", `via-${loginButtonText}`);
   loginContainer.appendChild(method);
 });
 let visibleFlg = false;
@@ -91,6 +101,7 @@ function loginHandler() {
       isLoggedIn = true;
       commnet_input_tag.removeAttribute("disabled");
       userName.innerHTML = loggedInUser;
+      comment_add_button.classList.toggle("display_none");
     }
     return false;
   }
@@ -101,14 +112,23 @@ function checkRapidCommenting() {
     loggedInUser == comment_list[comment_list.length - 1].author &&
     loggedInUser == comment_list[comment_list.length - 2].author
   ) {
-    alert("You are commeing too rapidly wait!");
+    alert(
+      `댓글을 너무 자주 달고 있습니다.
+댓글은 2개 초과해서 달 수 없습니다.
+3초간 댓글등록 버튼은 비활성화 됩니다.`
+    );
     return false;
   } else return true;
 }
 
 function makeButtonDisabledTemp(target) {
+  console.log(target);
   target.setAttribute("disabled", true);
-  setTimeout(() => target.removeAttribute("disabled"), 3000);
+  target.classList.toggle("disabled-button");
+  setTimeout(() => {
+    target.classList.toggle("disabled-button");
+    target.removeAttribute("disabled");
+  }, 3000);
 }
 
 function addComment(e) {
@@ -209,29 +229,31 @@ function modifyComment(target_comment_id) {
 
   const tartgetEl = document.getElementById(`${target_comment_id}`);
   const modify_box = document.createElement("div");
-  modify_box.setAttribute("class", "modify_box");
-  modify_box.setAttribute("id", `"${new Date().now}"`);
+  modify_box.setAttribute("class", "modify-box");
+  modify_box.setAttribute("id", `"${new Date().valueOf()}"`);
   const textArea = document.createElement("input");
   textArea.setAttribute("id", "modifying-text");
+  textArea.setAttribute("class", "modifying-text");
   textArea.value = target_comment.content;
   const confirmButton = document.createElement("button");
-  confirmButton.setAttribute("class", "confirmButton");
+  confirmButton.setAttribute("class", "confirm-button");
   confirmButton.setAttribute(
     "onclick",
     `modificatoinConfirmHandler(${target_comment_id})`
   );
   confirmButton.innerHTML = "confirm";
   modify_box.appendChild(textArea);
+  modify_box.appendChild(confirmButton);
   tartgetEl.appendChild(modify_box);
-  tartgetEl.appendChild(confirmButton);
 }
 
 function modificatoinConfirmHandler(target_comment_id) {
   const targetObj = comment_list.filter(
     (one) => one.id === +target_comment_id
   )[0];
-  const editedText = document.getElementById(target_comment_id).children[1]
-    .children[0].value;
+  const editedText = document
+    .getElementById(target_comment_id)
+    .querySelector(".modifying-text").value;
   targetObj.content = editedText;
   targetObj.updatedDate = new Date();
   comment_list.filter((one) => one.id !== +target_comment_id).push(targetObj);
@@ -273,24 +295,15 @@ window.addEventListener("click", (e) => {
 });
 
 login_buttons_container.addEventListener("click", (e) => {
-  if (e.target.innerHTML === "facebook") {
-    loggedInUser = "authenticated by facebook";
-  }
-  if (e.target.innerHTML === "naver") {
-    loggedInUser = "authenticated by naver";
-  }
-  if (e.target.innerHTML === "kakao") {
-    loggedInUser = "authenticated by kakao";
-  }
-  if (e.target.innerHTML === "google") {
-    loggedInUser = "authenticated by google";
-  }
-  if (e.target.innerHTML === "twitter") {
-    loggedInUser = "authenticated by twitter";
-  }
-  if (e.target.innerHTML === "email") {
+  if (e.target.name.includes("email")) {
     loginHandler();
     return;
+  }
+  for (const property in loginMethods) {
+    if (e.target.name.includes(loginMethods[property])) {
+      console.log(loginMethods[property]);
+      loggedInUser = `authenticated by ${loginMethods[property]}`;
+    }
   }
   document.getElementById("author-name").innerHTML = loggedInUser;
   commnet_input_tag.removeAttribute("disabled");
@@ -312,10 +325,12 @@ const comment_card = (comment_card) => {
     detail() {
       return `<div class="comment_card" id="${comment_card.id}">
 		<div>
-		<span class="comment-author">${
-      comment_card.author ? comment_card.author : loggedInUser
-    }</span>
-		<span class="comment-date">${formattedDate}</span>
+		<div class="first-row-comment-card">
+			<span class="comment-author">${
+        comment_card.author ? comment_card.author : loggedInUser
+      }</span>
+			<span class="comment-date">${formattedDate}</span>
+		</div>
 		<p> ${comment_card.content} </p>
 			<div class="flex-button-box">
 				 <button id="like">👍 ${comment_card.like}</button>
@@ -324,12 +339,12 @@ const comment_card = (comment_card) => {
 		<div class="flex-editing-button-box">
 			${
         loggedInUser === comment_card.author
-          ? "<button class='red-button'>Delete</button>"
+          ? "<button class='delete-button'>Delete</button>"
           : ""
       } 
 			${
         loggedInUser === comment_card.author
-          ? "<button class='green-button'>Modify</button>"
+          ? "<button class='modify-button'>Modify</button>"
           : ""
       } 
 		</div>
@@ -347,21 +362,17 @@ function deleagateEventHandler() {
   document
     .querySelector("div.comment-container")
     .addEventListener("click", (event) => {
-      if (event.target == "[object HTMLButtonElement]") {
-        if (event.target.innerHTML === "Modify") {
-          modifyComment(event.target.parentNode.parentNode.parentNode.id);
-        }
+      if (event.target.innerHTML === "Modify") {
+        modifyComment(event.target.closest(".comment_card").id);
       }
-      if (event.target == "[object HTMLButtonElement]") {
-        if (event.target.innerHTML === "Delete") {
-          deleteComment(event.target.parentNode.parentNode.parentNode.id);
-        }
+      if (event.target.innerHTML === "Delete") {
+        deleteComment(event.target.closest(".comment_card").id);
       }
       if (event.target.getAttribute("id") == "dislike") {
-        dislikeHandler(event.target.parentNode.parentNode.parentNode.id);
+        dislikeHandler(event.target.closest(".comment_card").id);
       }
       if (event.target.getAttribute("id") == "like") {
-        likeHandler(event.target.parentNode.parentNode.parentNode.id);
+        likeHandler(event.target.closest(".comment_card").id);
       }
     });
 }

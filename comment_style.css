@@ -82,11 +82,13 @@ button {
 }
 
 .adding-comment {
-	color: white;
- 	background: pink;
+	color: #382c2c;
+ 	background: #4ca04f;
 	font-weight:bold;
 	padding: 1rem 3rem 1rem 3rem;
 	width:100%;
+	outline: none;
+	border: none;
 }
 .input-box {
 	width: 100%;
@@ -110,16 +112,38 @@ button {
 }
 
 /*===========================================*/
-
-#modifying-text{
-	width:90%;
-	padding: 20px;
+/*modify-box=========*/
+.modify-box{
+	margin: 15px 0 15px 0;
+}
+.confirm-button{
+	padding: 1rem 3rem 1rem 3rem;
+	background: #1a9c71;
+	color: white;
+	font-weight: 900;
+	width:100%;
+	margin:0;
+}
+.modifying-text{
+	margin: 0 0 15px 0;
 	font-size: 5rem;
-}	
-/*card*/
+	width:100%;
+    outline: 0;
+    border-width: 0 0 2px;
+    border-color: blue;
+}
+/*==================*/
+
+/*card=====================================*/
 .flex-button-box{
 	display:flex;
 	justify-content: flex-end;
+}
+.flex-button-box > button {
+	font-size: 1.8rem;
+	outline: none;
+	border:none;
+	border-bottom: solid;
 }
 .flex-editing-button-box{
 	margin: 1rem 0 1rem 0;
@@ -133,11 +157,18 @@ button {
 	color: white;
 	font-weight: bold;
 	text-size: 2rem;
+	padding: 1rem 3rem 1rem 3rem;
 }
-.flex-editing-button-box > .red-button {
+.flex-editing-button-box > .delete-button {
 	background: red;
+}
+.first-row-comment-card{
+	margin: 1rem 0 1rem 0;
 }
 
 .display_none{
 	display:none;
+}
+.disabled-button{
+	background: gray;
 }
