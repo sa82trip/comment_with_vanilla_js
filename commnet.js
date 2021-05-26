@@ -132,6 +132,7 @@ function makeButtonDisabledTemp(target) {
 }
 
 function addComment(e) {
+  const comment_detail = document.querySelector("#comment-input");
   if (!isLoggedIn) {
     return;
   }
@@ -140,11 +141,10 @@ function addComment(e) {
     return;
   }
 
-  if (!checkWordsOfComment()) {
+  if (!checkWordsOfComment(comment_detail.value)) {
     makeButtonDisabledTemp(e.target);
     return;
   }
-  const comment_detail = document.querySelector("#comment-input");
   if (comment_detail.value === "") {
     alert("nothing is written!");
     return;
@@ -179,9 +179,9 @@ function inject_comments() {
   document.querySelector("div.comment-container").innerHTML = comments;
 }
 
-function checkWordsOfComment() {
-  const inputtedText = document.querySelector(".input-box").value;
-  if (bannedWords.some((word) => inputtedText.includes(word))) {
+function checkWordsOfComment(sentence) {
+  console.log(sentence);
+  if (bannedWords.some((word) => sentence.includes(word))) {
     alert("금칙어를 제거하고 다시 시도해주세요");
     return false;
   } else {
@@ -254,6 +254,7 @@ function modificatoinConfirmHandler(target_comment_id) {
   const editedText = document
     .getElementById(target_comment_id)
     .querySelector(".modifying-text").value;
+  if (!checkWordsOfComment(editedText)) return;
   targetObj.content = editedText;
   targetObj.updatedDate = new Date();
   comment_list.filter((one) => one.id !== +target_comment_id).push(targetObj);
@@ -265,7 +266,10 @@ function modificatoinConfirmHandler(target_comment_id) {
 
 //delete comment
 function deleteComment(target_comment_id) {
+  const wantToDelete = confirm("정말로 comment를 지우시겠습니까?");
+  console.log(wantToDelete);
   if (!identifyAuthor(target_comment_id)) return;
+  if (!wantToDelete) return;
   const filteredCommentList = comment_list.filter(
     (one) => one.id !== +target_comment_id
   );
@@ -309,6 +313,7 @@ login_buttons_container.addEventListener("click", (e) => {
   commnet_input_tag.removeAttribute("disabled");
   comment_add_button.classList.toggle("display_none");
   isLoggedIn = true;
+  document.getElementById("comment-input").focus();
 });
 
 // attach eventlistener end ================================================
@@ -324,30 +329,37 @@ const comment_card = (comment_card) => {
   return {
     detail() {
       return `<div class="comment_card" id="${comment_card.id}">
-		<div>
-		<div class="first-row-comment-card">
-			<span class="comment-author">${
-        comment_card.author ? comment_card.author : loggedInUser
-      }</span>
-			<span class="comment-date">${formattedDate}</span>
+	<div class="first-row-comment-card">
+		<div class="first-col">
+				<span class="comment-author">${
+          comment_card.author ? comment_card.author : loggedInUser
+        }</span>
+				<span class="comment-date">${formattedDate}</span>
+			</div>
+		<div class="second-col">
+		<span id="option-button" class="option-button">${
+      comment_card.author === loggedInUser ? "⌥" : ""
+    }</span>
+		</div>
 		</div>
 		<p> ${comment_card.content} </p>
 			<div class="flex-button-box">
 				 <button id="like">👍 ${comment_card.like}</button>
 				 <button id="dislike">👎 ${comment_card.dislike}</button>
 			</div>
-		<div class="flex-editing-button-box">
+		<div class="modifying-part-container">
+			<div class="flex-editing-button-box display_none">
 			${
         loggedInUser === comment_card.author
           ? "<button class='delete-button'>Delete</button>"
           : ""
       } 
-			${
-        loggedInUser === comment_card.author
-          ? "<button class='modify-button'>Modify</button>"
-          : ""
-      } 
-		</div>
+		${
+      loggedInUser === comment_card.author
+        ? "<button class='modify-button'>Modify</button>"
+        : ""
+    } 
+			</div>
 		</div>
 		</div>
 `;
@@ -373,6 +385,12 @@ function deleagateEventHandler() {
       }
       if (event.target.getAttribute("id") == "like") {
         likeHandler(event.target.closest(".comment_card").id);
+      }
+      if (event.target.id === "option-button") {
+        event.target
+          .closest(".comment_card")
+          .querySelector(".flex-editing-button-box")
+          .classList.toggle("display_none");
       }
     });
 }
