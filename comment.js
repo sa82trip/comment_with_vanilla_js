@@ -58,33 +58,34 @@ const loginMethods = {
 let loggedInUser = "click below to write a comment";
 const userNameEl = document.getElementById("author-name");
 userNameEl.innerHTML = loggedInUser;
-const commnet_input_tag = document.getElementById("comment-input");
-commnet_input_tag.setAttribute("disabled", "true");
+const comment_input_tag_El = document.getElementById("comment-input");
+comment_input_tag_El.setAttribute("disabled", "true");
 let isModifying = false;
 let isLoggedIn;
 if (loggedInUser === "to write commnet please login") isLoggedIn = false;
 
-const loginContainer = document.querySelector(".login-container");
+const loginContainerEl = document.querySelector(".login-container");
 mockLoginMethods.forEach((loginButtonText) => {
   const method = document.createElement("button");
   method.innerHTML = loginButtonText;
   method.setAttribute("name", `via-${loginButtonText}`);
-  loginContainer.appendChild(method);
+  loginContainerEl.appendChild(method);
 });
 let visibleFlg = false;
 
-const login_buttons_container = document.querySelector(".login-container");
-const comment_add_button = document.querySelector(".adding-comment");
-comment_add_button.classList.toggle("display_none");
+const login_buttons_container_El = document.querySelector(".login-container");
+const comment_add_button_El = document.querySelector(".adding-comment");
+comment_add_button_El.classList.toggle("display_none");
+const commentContainerEl = document.querySelector(".comment-container");
 // initialization end =================================================
 
 // funcitons ==========================================================
 const toggleLoginModal = (flg) => {
   if (!flg) {
-    document.querySelector(".login-container").classList.remove("visible");
+    login_buttons_container_El.classList.remove("visible");
     visibleFlg = false;
   } else {
-    document.querySelector(".login-container").classList.add("visible");
+    login_buttons_container_El.classList.add("visible");
     visibleFlg = true;
   }
 };
@@ -99,9 +100,9 @@ function loginHandler() {
     } else {
       loggedInUser = tempUserName;
       isLoggedIn = true;
-      commnet_input_tag.removeAttribute("disabled");
+      comment_input_tag_El.removeAttribute("disabled");
       userNameEl.innerHTML = loggedInUser;
-      comment_add_button.classList.toggle("display_none");
+      comment_add_button_El.classList.toggle("display_none");
     }
     return false;
   }
@@ -144,11 +145,11 @@ function addComment(e) {
     makeButtonDisabledTemp(e.target);
     return;
   }
-  if (comment_detail.value === "") {
+  if (comment_detail.value.length === 0) {
     alert("nothing is written!");
     return;
   }
-  document.querySelector(".adding-comment").setAttribute("disabled", true);
+  comment_add_button_El.setAttribute("disabled", true);
   const comment = {
     author: loggedInUser,
     date: new Date(),
@@ -166,7 +167,7 @@ function addComment(e) {
 
   comment_detail.value = "";
 
-  document.querySelector(".adding-comment").removeAttribute("disabled");
+  comment_add_button_El.removeAttribute("disabled");
 }
 
 //put comments into html file
@@ -175,7 +176,7 @@ function inject_comments() {
   for (let i = 0; i < comment_list.length; i++) {
     comments += comment_card(comment_list[i]).detail();
   }
-  document.querySelector("div.comment-container").innerHTML = comments;
+  commentContainerEl.innerHTML = comments;
 }
 
 function checkWordsOfComment(sentence) {
@@ -286,7 +287,7 @@ function identifyAuthor(target_comment_id) {
 // attach eventlistener ================================================
 window.addEventListener("click", (e) => {
   if (
-    e.target === document.querySelector(".adding-comment") ||
+    e.target === comment_add_button_El ||
     e.target === document.querySelector(".input-box")
   ) {
     if (!isLoggedIn) toggleLoginModal(true);
@@ -295,7 +296,7 @@ window.addEventListener("click", (e) => {
   }
 });
 
-login_buttons_container.addEventListener("click", (e) => {
+login_buttons_container_El.addEventListener("click", (e) => {
   if (e.target.name.includes("email")) {
     loginHandler();
     return;
@@ -305,11 +306,11 @@ login_buttons_container.addEventListener("click", (e) => {
       loggedInUser = `authenticated by ${loginMethods[property]}`;
     }
   }
-  document.getElementById("author-name").innerHTML = loggedInUser;
-  commnet_input_tag.removeAttribute("disabled");
-  comment_add_button.classList.toggle("display_none");
+  userNameEl.innerHTML = loggedInUser;
+  comment_input_tag_El.removeAttribute("disabled");
+  comment_add_button_El.classList.toggle("display_none");
   isLoggedIn = true;
-  document.getElementById("comment-input").focus();
+  comment_input_tag_El.focus();
 });
 
 // attach eventlistener end ================================================
@@ -367,32 +368,31 @@ const comment_card = (comment_card) => {
 
 function deleagateEventHandler() {
   //event delegate pattern
-  document
-    .querySelector("div.comment-container")
-    .addEventListener("click", (event) => {
-      if (event.target.innerHTML === "Modify") {
-        modifyComment(event.target.closest(".comment_card").id);
-      }
-      if (event.target.innerHTML === "Delete") {
-        deleteComment(event.target.closest(".comment_card").id);
-      }
-      if (event.target.getAttribute("id") == "dislike") {
-        dislikeHandler(event.target.closest(".comment_card").id);
-      }
-      if (event.target.getAttribute("id") == "like") {
-        likeHandler(event.target.closest(".comment_card").id);
-      }
-      if (event.target.id === "option-button") {
-        event.target
-          .closest(".comment_card")
-          .querySelector(".flex-editing-button-box")
-          .classList.toggle("display_none");
-      }
-    });
+  commentContainerEl.addEventListener("click", (event) => {
+    if (event.target.innerHTML === "Modify") {
+      modifyComment(event.target.closest(".comment_card").id);
+    }
+    if (event.target.innerHTML === "Delete") {
+      deleteComment(event.target.closest(".comment_card").id);
+    }
+    if (event.target.getAttribute("id") == "dislike") {
+      dislikeHandler(event.target.closest(".comment_card").id);
+    }
+    if (event.target.getAttribute("id") == "like") {
+      likeHandler(event.target.closest(".comment_card").id);
+    }
+    if (event.target.id === "option-button") {
+      event.target
+        .closest(".comment_card")
+        .querySelector(".flex-editing-button-box")
+        .classList.toggle("display_none");
+    }
+  });
 }
 
 inject_comments();
 deleagateEventHandler();
+// prevent submit by hitting enter key
 document
   .querySelector(".comment-input-container")
   .addEventListener("keypress", function (e) {
