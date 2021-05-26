@@ -122,7 +122,6 @@ function checkRapidCommenting() {
 }
 
 function makeButtonDisabledTemp(target) {
-  console.log(target);
   target.setAttribute("disabled", true);
   target.classList.toggle("disabled-button");
   setTimeout(() => {
@@ -180,7 +179,6 @@ function inject_comments() {
 }
 
 function checkWordsOfComment(sentence) {
-  console.log(sentence);
   if (bannedWords.some((word) => sentence.includes(word))) {
     alert("금칙어를 제거하고 다시 시도해주세요");
     return false;
@@ -267,7 +265,6 @@ function modificatoinConfirmHandler(target_comment_id) {
 //delete comment
 function deleteComment(target_comment_id) {
   const wantToDelete = confirm("정말로 comment를 지우시겠습니까?");
-  console.log(wantToDelete);
   if (!identifyAuthor(target_comment_id)) return;
   if (!wantToDelete) return;
   const filteredCommentList = comment_list.filter(
@@ -305,7 +302,6 @@ login_buttons_container.addEventListener("click", (e) => {
   }
   for (const property in loginMethods) {
     if (e.target.name.includes(loginMethods[property])) {
-      console.log(loginMethods[property]);
       loggedInUser = `authenticated by ${loginMethods[property]}`;
     }
   }
@@ -397,3 +393,11 @@ function deleagateEventHandler() {
 
 inject_comments();
 deleagateEventHandler();
+document
+  .querySelector(".comment-input-container")
+  .addEventListener("keypress", function (e) {
+    //Enter key
+    if (e.which == 13) {
+      return false;
+    }
+  });
