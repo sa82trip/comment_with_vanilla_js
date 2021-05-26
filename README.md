@@ -38,6 +38,12 @@ vanilla js로 코딩을 해보니, 지금까지보다 html구조에 더 신경�
 
 ### 기본 기능
 
+⭐ 댓글 화면의 기본 생김새
+![image](https://user-images.githubusercontent.com/38380280/119646047-abe1c980-be59-11eb-9e13-a8cc126cc599.png)
+
+⭐ 작성자에게 보이는 지우기, 편집하기 버튼
+![image](https://user-images.githubusercontent.com/38380280/119646346-0418cb80-be5a-11eb-994e-da3f2b3a05f8.png)
+
 
 #### comment 작성, 삭제, 수정
 
